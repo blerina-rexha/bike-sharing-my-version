@@ -223,17 +223,64 @@ class Station(Entity):
         latitude: float,
         longitude: float,
     ) -> None:
-        super().__init__(id=station_id)
+        super().__init__(id=station_id, created_at=None)
         # TODO: validate and store attributes
-        pass
+
+        if capacity <= 0:
+            raise ValueError("capacity must be positive")
+        self._capacity = capacity
+
+        if not (-90 <= latitude <= 90):
+            raise ValueError("latitude must be between -90 and 90")
+        self._latitude = latitude
+
+        if not (-180 <= longitude <= 180):
+            raise ValueError("longitude must be between -180 and 180")
+        self._longitude = longitude
+
+        self._name = name
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def capacity(self) -> int:
+        return self._capacity
+    
+    @capacity.setter
+    def capacity(self, value: int) -> None:
+        if value <= 0:
+            raise ValueError("capacity must be positive")
+        self._capacity = value  
+
+    @property
+    def latitude(self) -> float:
+        return self._latitude
+    
+    @latitude.setter
+    def latitude(self, value: float) -> None:
+        if not (-90 <= value <= 90):
+            raise ValueError("latitude must be between -90 and 90")
+        self._latitude = value
+
+    @property
+    def longitude(self) -> float:
+        return self._longitude
+
+    @longitude.setter
+    def longitude(self, value: float) -> None:
+        if not (-180 <= value <= 180):
+            raise ValueError("longitude must be between -180 and 180")
+        self._longitude = value
 
     def __str__(self) -> str:
         # TODO
-        return f"Station({self.id})"
+        return f"Station({self.id}, name={self.name}, capacity={self.capacity}, latitude={self.latitude}, longitude={self.longitude})"
 
     def __repr__(self) -> str:
         # TODO
-        return f"Station(station_id={self.id!r})"
+        return f"Station(station_id={self.id!r}, name={self.name!r}, capacity={self.capacity!r}, latitude={self.latitude!r}, longitude={self.longitude!r})"
 
 
 # ---------------------------------------------------------------------------
