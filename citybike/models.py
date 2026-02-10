@@ -163,15 +163,43 @@ class ElectricBike(Bike):
         super().__init__(bike_id=bike_id, bike_type="electric", status=status)
         # TODO: validate battery_level (0-100) and max_range_km (>0)
         # TODO: store as private attributes with @property access
-        pass
+
+        if not (0 <= battery_level <= 100):
+            raise ValueError("battery_level must be between 0 and 100")
+        self._battery_level = battery_level
+
+        if max_range_km <= 0:
+            raise ValueError("max_range_km must be positive")
+        self._max_range_km = max_range_km
+
+
+    @property
+    def battery_level(self) -> float:
+        return self._battery_level
+    
+    @battery_level.setter
+    def battery_level(self, value: float) -> None:
+        if not (0 <= value <= 100):
+            raise ValueError("battery_level must be between 0 and 100")
+        self._battery_level = value
+
+    @property
+    def max_range_km(self) -> float:
+        return self._max_range_km
+    
+    @max_range_km.setter
+    def max_range_km(self, value: float) -> None:
+        if value <= 0:
+            raise ValueError("max_range_km must be positive")
+        self._max_range_km = value
 
     def __str__(self) -> str:
         # TODO: return a user-friendly string
-        return f"ElectricBike({self.id})"
+        return f"ElectricBike(id={self.id}, battery_level={self.battery_level}, max_range_km={self.max_range_km})"
 
     def __repr__(self) -> str:
         # TODO: return a debug-friendly string
-        return f"ElectricBike(bike_id={self.id!r})"
+        return f"ElectricBike(bike_id={self.id!r}, battery_level={self.battery_level!r}, max_range_km={self.max_range_km!r}, status={self.status!r})"
 
 
 # ---------------------------------------------------------------------------
