@@ -388,15 +388,46 @@ class MemberUser(User):
     ) -> None:
         super().__init__(user_id=user_id, name=name, email=email, user_type="member")
         # TODO: validate and store attributes
-        pass
+        if membership_start is None:
+            membership_start = datetime.now()
+        if membership_end is None:
+            membership_end = membership_start
+
+        if membership_end <= membership_start:
+            raise ValueError("membership_end must be after membership_start")
+        self._membership_start = membership_start
+        self._membership_end = membership_end
+
+        if tier not in ("basic", "premium"):
+            raise ValueError("tier must be 'basic' or 'premium'")
+        self._tier = tier
+
+    @property
+    def membership_start(self):
+         return self._membership_start
+        
+    @property
+    def membership_end(self): 
+        return self._membership_end  
+            
+        
+    @property
+    def tier(self):
+         return self._tier
+        
+    @tier.setter
+    def tier(self, value: str) -> None:
+        if value not in ("basic", "premium"):
+            raise ValueError("tier must be 'basic' or 'premium'")
+        self._tier = value
 
     def __str__(self) -> str:
         # TODO
-        return f"MemberUser({self.id})"
+        return f"MemberUser(id={self.id}, tier={self.tier}, membership_start={self.membership_start}, membership_end={self.membership_end})"
 
     def __repr__(self) -> str:
         # TODO
-        return f"MemberUser(user_id={self.id!r})"
+        return f"MemberUser(user_id={self.id!r}, name={self.name!r}, email={self.email!r}, membership_start={self.membership_start!r}, membership_end={self.membership_end!r}, tier={self.tier!r}   )"
 
 
 # ---------------------------------------------------------------------------
@@ -426,21 +457,41 @@ class Trip:
         distance_km: float,
     ) -> None:
         # TODO: validate and store attributes
-        pass
 
+        self.trip_id = trip_id
+        self.user = user
+        self.bike = bike
+        self.start_station = start_station  
+        self.end_station = end_station
+        
+        if end_time < start_time:
+            raise ValueError("end_time must be after start_time")
+        
+        self.end_time = end_time
+        self.start_time = start_time
+
+        if distance_km < 0:
+            raise ValueError("distance_km must be non-negative")
+        self._distance_km = distance_km        
+
+    @property
+    def distance_km(self) -> float:
+        return self._distance_km
+    
     @property
     def duration_minutes(self) -> float:
         """Calculate trip duration in minutes from start and end times."""
         # TODO: compute from end_time - start_time
-        return 0.0
+        duration = self.end_time - self.start_time
+        return duration.total_seconds() / 60
 
     def __str__(self) -> str:
         # TODO
-        return f"Trip({self.trip_id})"
+        return f"Trip({self.trip_id}, distance_km={self._distance_km}, duration_minutes={self.duration_minutes})"
 
     def __repr__(self) -> str:
         # TODO
-        return f"Trip(trip_id={self.trip_id!r})"
+        return f"Trip(trip_id={self.trip_id!r}, user={self.user!r}, bike={self.bike!r}, start_station={self.start_station!r}, end_station={self.end_station!r}, start_time={self.start_time!r}, end_time={self.end_time!r}, distance_km={self._distance_km!r})"
 
 
 # ---------------------------------------------------------------------------
@@ -474,12 +525,32 @@ class MaintenanceRecord:
         description: str = "",
     ) -> None:
         # TODO: validate and store attributes
-        pass
+        self.record_id = record_id
+        self.bike = bike
+        self.date = date
+
+        if maintenance_type not in self.VALID_TYPES:
+            raise ValueError(f"Invalid maintenance_type: {maintenance_type}")   
+        self.maintenance_type = maintenance_type
+
+        if cost < 0:
+            raise ValueError("cost must be non-negative")   
+        self.cost = cost
+        
+        self.description = description
+
+    @property
+    def maintenance_type(self) -> str:  
+        return self._maintenance_type
+    
+    @property
+    def cost(self) -> float:
+        return self._cost
 
     def __str__(self) -> str:
         # TODO
-        return "MaintenanceRecord()"
+        return f"MaintenanceRecord(id={self.record_id}, bike_id={self.bike.id}, type={self.maintenance_type}, cost={self.cost}$)"
 
     def __repr__(self) -> str:
         # TODO
-        return "MaintenanceRecord()"
+        return f"MaintenanceRecord(record_id={self.record_id!r}, bike={self.bike!r}, date={self.date!r}, maintenance_type={self.maintenance_type!r}, cost={self.cost!r}, description={self.description!r})"
