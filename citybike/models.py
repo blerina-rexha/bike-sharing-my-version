@@ -360,7 +360,7 @@ class CasualUser(User):
 
     def __str__(self) -> str:
         # TODO
-        return f"CasualUser({self.id}, name={self.name}, day_pass_count={self)"
+        return f"CasualUser({self.id}, name={self.name}, day_pass_count={self})"
 
     def __repr__(self) -> str:
         # TODO
@@ -554,3 +554,6 @@ class MaintenanceRecord:
     def __repr__(self) -> str:
         # TODO
         return f"MaintenanceRecord(record_id={self.record_id!r}, bike={self.bike!r}, date={self.date!r}, maintenance_type={self.maintenance_type!r}, cost={self.cost!r}, description={self.description!r})"
+
+if __name__ == "__main__":
+    print("Models.py loaded successfully")
