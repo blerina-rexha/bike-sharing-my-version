@@ -92,7 +92,15 @@ def insertion_sort(data: list[Any], key: Callable = lambda x: x) -> list[Any]:
         - For each element, shift larger elements to the right
         - Insert the current element at the correct position
     """
-    raise NotImplementedError("insertion_sort")
+    a=data.copy()
+    for i in range(1,len(a)):
+        current=a[i]
+        j=i-1
+        while j>=0 and key(a[j])>key(current):
+            a[j+1]=a[j]
+            j-=1
+        a[j+1]=current
+    return a
 
 
 # ---------------------------------------------------------------------------
@@ -158,9 +166,18 @@ def linear_search(
 
     TODO: implement the linear scan.
     """
-    raise NotImplementedError("linear_search")
+    low, high = 0, len(data) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        mid_val = key(sorted_data[mid])
 
-
+        if mid_val == target:
+            return mid
+        elif mid_val < target:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return None
 # ---------------------------------------------------------------------------
 # Benchmarking helper
 # ---------------------------------------------------------------------------
@@ -200,4 +217,21 @@ def benchmark_search(
 
     TODO: implement once binary_search and linear_search are complete.
     """
-    raise NotImplementedError("benchmark_search")
+    sorted_data = sorted(data, key=key)
+    binary_time = timeit.timeit(
+        lambda: binary_search(sorted_data, target, key=key), number=repeats
+    )
+
+    linear_time = timeit.timeit(
+        lambda: linear_search(data, target, key=key), number=repeats
+    )
+
+    builtin_time = timeit.timeit(
+        lambda: target in data, number=repeats   
+    )
+
+    return {
+        "binary_search_ms": round(binary_time / repeats * 1000, 2), 
+        "linear_search_ms": round(linear_time / repeats * 1000, 2),
+        "builtin_in_ms": round(builtin_time / repeats * 1000, 2),
+    }
