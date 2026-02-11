@@ -13,7 +13,7 @@ Entry point that orchestrates the full pipeline:
 Usage:
     python main.py
 """
-
+import pandas as pd
 from analyzer import BikeShareSystem
 from visualization import plot_trips_per_station
 
@@ -25,7 +25,11 @@ def main() -> None:
 
     # Step 1 — Load data
     print("\n>>> Loading data …")
-    system.load_data()
+    #system.load_data()
+    system.trips = pd.read_csv("data/trips.csv")
+    system.stations = pd.read_csv("data/stations.csv")
+    system.maintenance = pd.read_csv("data/maintenance.csv")
+
 
     # Step 2 — Inspect
     print("\n>>> Inspecting data …")
@@ -34,6 +38,8 @@ def main() -> None:
     # Step 3 — Clean
     print("\n>>> Cleaning data …")
     system.clean_data()
+
+    system.generate_summary_report()
 
     # Step 4 — Analytics
     print("\n>>> Running analytics …")
