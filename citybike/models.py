@@ -320,7 +320,7 @@ class User(Entity):
 
     def __str__(self) -> str:
         # TODO
-        return f"User({self.id}, name={self.name}, email={self.email}, user_type={self.user_type})"
+        return f"User({self.id}, name={self.name}, user_type={self.user_type})"
 
     def __repr__(self) -> str:
         # TODO
@@ -344,15 +344,27 @@ class CasualUser(User):
     ) -> None:
         super().__init__(user_id=user_id, name=name, email=email, user_type="casual")
         # TODO: validate and store day_pass_count
-        pass
+        if day_pass_count < 0:
+            raise ValueError("day_pass_count must be non-negative")
+        self._day_pass_count = day_pass_count
+
+    @property
+    def day_pass_count(self) -> int:
+        return self._day_pass_count
+
+    @day_pass_count.setter
+    def day_pass_count(self, value: int) -> None:
+        if value < 0:
+            raise ValueError("day_pass_count must be non-negative")
+        self._day_pass_count = value
 
     def __str__(self) -> str:
         # TODO
-        return f"CasualUser({self.id})"
+        return f"CasualUser({self.id}, name={self.name}, day_pass_count={self)"
 
     def __repr__(self) -> str:
         # TODO
-        return f"CasualUser(user_id={self.id!r})"
+        return f"CasualUser(user_id={self.id!r}, name={self.name!r}, email={self.email!r}, day_pass_count={self.day_pass_count!r})"
 
 
 class MemberUser(User):
