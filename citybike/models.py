@@ -224,6 +224,8 @@ class Station(Entity):
         longitude: float,
     ) -> None:
         super().__init__(id=station_id, created_at=None)
+        self.name = name
+        self.station_id = station_id
         # TODO: validate and store attributes
 
         if capacity <= 0:
@@ -237,12 +239,6 @@ class Station(Entity):
         if not (-180 <= longitude <= 180):
             raise ValueError("longitude must be between -180 and 180")
         self._longitude = longitude
-
-        self._name = name
-
-    @property
-    def name(self) -> str:
-        return self._name
 
     @property
     def capacity(self) -> int:
@@ -305,15 +301,30 @@ class User(Entity):
     ) -> None:
         super().__init__(id=user_id)
         # TODO: validate and store attributes
-        pass
+        self.name = name
+        self.user_type = user_type
+        if "@" not in email:
+            raise ValueError("Invalid email format")    
+        self._email = email
+
+        @property
+        def email(self) -> str:
+            return self._email
+        
+        @email.setter
+        def email(self, value: str) -> None:
+            if "@" not in value:
+                raise ValueError("Invalid email format")
+            self._email = value
+        
 
     def __str__(self) -> str:
         # TODO
-        return f"User({self.id})"
+        return f"User({self.id}, name={self.name}, email={self.email}, user_type={self.user_type})"
 
     def __repr__(self) -> str:
         # TODO
-        return f"User(user_id={self.id!r})"
+        return f"User(user_id={self.id!r}, name={self.name!r}, email={self.email!r}, user_type={self.user_type!r})"
 
 
 class CasualUser(User):
