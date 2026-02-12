@@ -1,13 +1,3 @@
-"""
-Data analysis engine for the CityBike platform.
-
-Contains the BikeShareSystem class that orchestrates:
-    - CSV loading and cleaning
-    - Answering business questions using Pandas
-    - Generating summary reports
-
-Students should implement the cleaning logic and at least 10 analytics methods.
-"""
 
 import pandas as pd
 import numpy as np
@@ -19,13 +9,7 @@ OUTPUT_DIR = Path(__file__).resolve().parent / "output"
 
 
 class BikeShareSystem:
-    """Central analysis class — loads, cleans, and analyzes bike-share data.
-
-    Attributes:
-        trips: DataFrame of trip records.
-        stations: DataFrame of station metadata.
-        maintenance: DataFrame of maintenance records.
-    """
+    #Central analysis class — loads, cleans, and analyzes bike-share data.
 
     def __init__(self) -> None:
         self.trips: pd.DataFrame | None = None
@@ -69,23 +53,12 @@ class BikeShareSystem:
     # ------------------------------------------------------------------
 
     def clean_data(self) -> None:
-        """Clean all DataFrames and export to CSV.
+        #Clean all DataFrames and export to CSV.
 
-        Steps to implement:
-            1. Remove duplicate rows
-            2. Parse date/datetime columns
-            3. Convert numeric columns stored as strings
-            4. Handle missing values (document your strategy!)
-            5. Remove invalid entries (e.g. end_time < start_time)
-            6. Standardize categorical values
-            7. Export cleaned data to data/trips_clean.csv etc.
-
-        TODO: implement each step below.
-        """
         if self.trips is None:
             raise RuntimeError("Call load_data() first")
 
-        # --- Step 1: Remove duplicates ---
+        # --- Remove duplicates ---
         self.trips = self.trips.drop_duplicates(subset=["trip_id"])
         print(f"After dedup: {self.trips.shape[0]} trips")
         self.stations = self.stations.drop_duplicates(subset=["station_id"])
@@ -93,25 +66,22 @@ class BikeShareSystem:
         self.maintenance = self.maintenance.drop_duplicates(subset=["record_id"])
         print(f"After dedup: {self.maintenance.shape[0]} maintenance records")
 
-        # --- Step 2: Parse dates ---
-        # TODO: convert start_time, end_time to datetime
+        # ---  Parse dates, convert start_time, end_time to datetime ---
+       
         self.trips["start_time"] = pd.to_datetime(self.trips["start_time"])
         self.trips["end_time"] = pd.to_datetime(self.trips["end_time"])
 
-        # --- Step 3: Convert numeric columns ---
-        # TODO: ensure duration_minutes and distance_km are float
+        # --- Convert numeric columns, ensure they are float ---
+        
         self.trips["duration_minutes"] = pd.to_numeric(self.trips["duration_minutes"], errors="coerce")
         self.trips["distance_km"] = pd.to_numeric(self.trips["distance_km"], errors="coerce")
-        # Note: additional numeric conversions can also be applied in stations 
-        # and maintenance datasets.(e.g., capacity, cost)
+                
+        # --- Handle missing values ---
         
-        # --- Step 4: Handle missing values ---
-        # TODO: decide on a strategy and document it
         self.trips = self.trips.dropna(subset=["start_time", "end_time", "duration_minutes", "distance_km"])
         print(f"After dropping missing values: {self.trips.shape[0]} trips")
 
-        # --- Step 5: Remove invalid entries ---
-        # TODO: drop rows where end_time < start_time
+        # --- Remove invalid entries, drop rows where end_time < start_time ---
 
         self.trips = self.trips[self.trips["end_time"] >= self.trips["start_time"]]
         if "distance_km" in self.trips.columns:
@@ -126,9 +96,7 @@ class BikeShareSystem:
         self.trips["status"] = (self.trips["status"]).str.lower().str.strip()
         print("Standardized categorical columns in trips dataset.")
 
-        # --- Step 7: Export cleaned datasets ---
-        # self.trips.to_csv(DATA_DIR / "trips_clean.csv", index=False)
-        # self.stations.to_csv(DATA_DIR / "stations_clean.csv", index=False)
+        # --- Export cleaned datasets ---
 
         self.trips.to_csv(DATA_DIR / "trips_clean.csv", index=False)
         self.stations.to_csv(DATA_DIR / "stations_clean.csv", index=False)
@@ -140,11 +108,8 @@ class BikeShareSystem:
     # ------------------------------------------------------------------
 
     def total_trips_summary(self) -> dict:
-        """Q1: Total trips, total distance, average duration.
+        #Total trips, total distance, average duration.
 
-        Returns:
-            Dict with 'total_trips', 'total_distance_km', 'avg_duration_min'.
-        """
         df = self.trips
         return {
             "total_trips": len(df),
@@ -153,12 +118,8 @@ class BikeShareSystem:
         }
 
     def top_start_stations(self, n: int = 10) -> pd.DataFrame:
-        """Q2: Top *n* most popular start stations.
+        #Top *n* most popular start stations.
 
-        TODO: use value_counts() or groupby on start_station_id,
-              merge with station names.
-        """
-        # Example start:
         counts = self.trips["start_station_id"].value_counts().head(n)
         top_starts = counts.reset_index()
         top_starts.columns = ["station_id", "trip_count"]
@@ -166,81 +127,61 @@ class BikeShareSystem:
         return top_starts.sort_values(by="trip_count", ascending=False)  
 
     def peak_usage_hours(self) -> pd.Series:
-        """Q3: Trip count by hour of day.
+        #Trip count by hour of day.
 
-        TODO: extract hour from start_time and count trips per hour.
-        """
         hours = self.trips["start_time"].dt.hour
         counts = hours.value_counts().sort_index()
         return counts
 
     def busiest_day_of_week(self) -> pd.Series:
-        """Q4: Trip count by day of week.
+        #Trip count by day of week.
 
-        TODO: extract day-of-week from start_time, count.
-        """
         days = self.trips["start_time"].dt.day_name()
         counts = days.value_counts()
         return counts
 
     def avg_distance_by_user_type(self) -> pd.Series:
-        """Q5: Average trip distance grouped by user type."""
+        """ Average trip distance grouped by user type."""
         avg_dist = self.trips.groupby("user_type")["distance_km"].mean().round(2)
         return avg_dist
 
     def monthly_trip_trend(self) -> pd.Series:
-        """Q7: Monthly trip counts over time.
+        #Monthly trip counts over time.
 
-        TODO: extract year-month from start_time, group, count.
-        """
         year_month = self.trips["start_time"].dt.to_period("M")
         monthly_counts = year_month.value_counts().sort_index()
         return monthly_counts
 
 
     def top_active_users(self, n: int = 15) -> pd.DataFrame:
-        """Q8: Top *n* most active users by trip count.
+        #Top *n* most active users by trip count.
 
-        TODO: group by user_id, count trips, sort descending.
-        """
         count=self.trips.groupby("user_id").size().sort_values(ascending=False)
         top_n_df=count.head(n).reset_index(name="trip_count")
         return top_n_df
 
     def maintenance_cost_by_bike_type(self) -> pd.Series:
-        """Q9: Total maintenance cost per bike type.
+        #Total maintenance cost per bike type.
 
-        TODO: group maintenance by bike_type, sum cost.
-        """
         if self.maintenance is None:
             raise RuntimeError("Maintenance data not loaded")
         total_cost = self.maintenance.groupby("bike_type")["cost"].sum().round(2)
         return total_cost
 
     def top_routes(self, n: int = 10) -> pd.DataFrame:
-        """Q10: Most common start→end station pairs.
+        #Most common start→end station pairs.
 
-        TODO: group by (start_station_id, end_station_id), count, sort.
-        """
         route_counts = self.trips.groupby(["start_station_id", "end_station_id"]).size()
         top_routes = route_counts.sort_values(ascending=False).head(n).reset_index(name="trip_count")
         return top_routes
-
-    # ------------------------------------------------------------------
-    # Add more analytics methods here (Q6, Q11–Q14)
-    # ------------------------------------------------------------------
 
     # ------------------------------------------------------------------
     # Reporting
     # ------------------------------------------------------------------
 
     def generate_summary_report(self) -> None:
-        """Write a summary text report to output/summary_report.txt.
+        #Write a summary text report to output/summary_report.txt.
 
-        TODO:
-            - Uncomment and complete each section below
-            - Add results from remaining analytics methods
-        """
         OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
         report_path = OUTPUT_DIR / "summary_report.txt"
 
@@ -249,32 +190,31 @@ class BikeShareSystem:
         lines.append("  CityBike — Summary Report")
         lines.append("=" * 60)
 
-        # --- Q1: Overall summary ---
+        # --- Overall summary ---
         summary = self.total_trips_summary()
         lines.append("\n--- Overall Summary ---")
         lines.append(f"  Total trips       : {summary['total_trips']}")
         lines.append(f"  Total distance    : {summary['total_distance_km']} km")
         lines.append(f"  Avg duration      : {summary['avg_duration_min']} min")
 
-        # --- Q2: Top start stations ---
-        # TODO: uncomment once top_start_stations() is implemented
+        # --- Top start stations ---
+    
         top_stations = self.top_start_stations()
         lines.append("\n--- Top 10 Start Stations ---")
         lines.append(top_stations.to_string(index=False))
 
-        # --- Q3: Peak usage hours ---
-        # TODO: uncomment once peak_usage_hours() is implemented
+        # --- Peak usage hours ---
+        
         hours = self.peak_usage_hours()
         lines.append("\n--- Peak Usage Hours ---")
         lines.append(hours.to_string(index=False))
 
-        # --- Q9: Maintenance cost by bike type ---
-        # TODO: uncomment once maintenance_cost_by_bike_type() is implemented
+        # --- Maintenance cost by bike type ---
+        
         maint_cost = self.maintenance_cost_by_bike_type()
         lines.append("\n--- Maintenance Cost by Bike Type ---")
         lines.append(maint_cost.to_string())
 
-        # TODO: add more sections for Q4–Q8, Q10–Q14 …
 
         report_text = "\n".join(lines) + "\n"
         report_path.write_text(report_text)
