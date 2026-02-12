@@ -40,15 +40,13 @@ def station_distance_matrix(
         4. Apply the formula: np.sqrt(lat_diff**2 + lon_diff**2)
     """
     # Step 1: compute pairwise latitude differences
-    # lat_diff = latitudes[:, np.newaxis] - latitudes[np.newaxis, :]
+    lat_diff = latitudes[:, np.newaxis] - latitudes[np.newaxis, :]
 
     # Step 2: compute pairwise longitude differences
-    # lon_diff = ...
+    lon_diff = longitudes[:, np.newaxis] - longitudes[np.newaxis, :]
 
     # Step 3: combine with Euclidean formula
-    # np.sqrt(lat_diff**2 + lon_diff**2)
-
-    raise NotImplementedError("station_distance_matrix")
+    distance_matrix = np.sqrt(lat_diff**2 + lon_diff**2)
 
 
 # ---------------------------------------------------------------------------
@@ -72,8 +70,10 @@ def trip_duration_stats(durations: np.ndarray) -> dict[str, float]:
         "median": float(np.median(durations)),
         "std": float(np.std(durations)),
         # TODO: add p25, p75, p90 using np.percentile
+        "p25": float(np.percentile(durations, 25)),
+        "p75": float(np.percentile(durations, 75)),
+        "p90": float(np.percentile(durations, 90)),
     }
-
 
 # ---------------------------------------------------------------------------
 # Outlier detection
@@ -102,9 +102,12 @@ def detect_outliers_zscore(
         4. Compute z-scores:  z = (values - mean) / std
         5. Return boolean:    np.abs(z) > threshold
     """
-
-    raise NotImplementedError("detect_outliers_zscore")
-
+    mean = np.mean(values)
+    std = np.std(values)
+    if std == 0:
+        return np.zeros_like(values, dtype=bool)  
+    z = (values - mean) / std
+    return np.abs(z) > threshold
 
 # ---------------------------------------------------------------------------
 # Vectorized fare calculation
@@ -151,4 +154,4 @@ def calculate_fares(
         # trip 3: 1.0 + 0.15*30 + 0.10*8.0 = 6.30
     """
 
-    raise NotImplementedError("calculate_fares")
+    return unlock_fee + per_minute * durations + per_km * distances
