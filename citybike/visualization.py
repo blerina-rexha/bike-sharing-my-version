@@ -74,8 +74,16 @@ def plot_monthly_trend(trips: pd.DataFrame) -> None:
         - Plot a line chart
         - Save as 'monthly_trend.png'
     """
-    raise NotImplementedError("plot_monthly_trend")
-
+    trips["year_month"] = trips["start_time"].dt.to_period("M")
+    monthly_counts = trips.groupby("year_month").size().reset_index(name="trip_count")  
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(monthly_counts["year_month"].astype(str), monthly_counts["trip_count"], marker="o",linestyle="-",
+        color="teal",)
+    ax.set_xlabel("Month")
+    ax.set_ylabel("Number of Trips")
+    ax.set_title("Monthly Trip Trend")
+    ax.tick_params(axis="x", rotation=45)
+    _save_figure(fig, "monthly_trend.png")
 
 # ---------------------------------------------------------------------------
 # 3. Histogram — trip duration distribution
@@ -90,8 +98,13 @@ def plot_duration_histogram(trips: pd.DataFrame) -> None:
         - Add title, axis labels
         - Save as 'duration_histogram.png'
     """
-    raise NotImplementedError("plot_duration_histogram")
-
+    durations= trips["duration_minutes"]
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.hist(durations, bins=30, color="coral", edgecolor="black")
+    ax.set_xlabel("Duration (minutes)")
+    ax.set_ylabel("Frequency")
+    ax.set_title("Distribution of Trip Durations")
+    _save_figure(fig, "duration_histogram.png")
 
 # ---------------------------------------------------------------------------
 # 4. Box plot — duration by user type
@@ -106,4 +119,11 @@ def plot_duration_by_user_type(trips: pd.DataFrame) -> None:
         - Add title, axis labels
         - Save as 'duration_by_user_type.png'
     """
-    raise NotImplementedError("plot_duration_by_user_type")
+    grouped_data = [trips[trips["user_type"] == user_type]["duration_minutes"] for user_type in trips["user_type"].unique()]
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.boxplot(grouped_data, labels=trips["user_type"].unique())
+    ax.set_xlabel("User Type")
+    ax.set_ylabel("Duration (minutes)")
+    ax.set_title("Trip Duration by User Type")
+    _save_figure(fig, "duration_by_user_type.png")
+
