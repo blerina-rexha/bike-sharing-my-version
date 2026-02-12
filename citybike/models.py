@@ -1,37 +1,14 @@
-"""
-Domain models for the CityBike Bike-Sharing Analytics platform.
 
-This module defines the class hierarchy:
-    Entity (ABC) -> Bike -> ClassicBike, ElectricBike
-                 -> Station
-                 -> User -> CasualUser, MemberUser
-    Trip
-    MaintenanceRecord
-    BikeShareSystem
-
-TODO for students:
-    - Complete the Station, User, CasualUser, MemberUser classes
-    - Complete the Trip and MaintenanceRecord classes
-    - Implement the BikeShareSystem class
-    - Add input validation to all constructors
-    - Add @property decorators where appropriate
-"""
 
 from abc import ABC, abstractmethod
 from datetime import datetime
-
 
 # ---------------------------------------------------------------------------
 # Abstract Base Class
 # ---------------------------------------------------------------------------
 
 class Entity(ABC):
-    """Abstract base class for all domain entities.
-
-    Attributes:
-        id: Unique identifier for the entity.
-        created_at: Timestamp when the entity was created.
-    """
+    ## Base class for all entities in the system, providing common attributes and methods.    
 
     def __init__(self, id: str, created_at: datetime | None = None) -> None:
         if not id or not isinstance(id, str):
@@ -65,12 +42,7 @@ class Entity(ABC):
 # ---------------------------------------------------------------------------
 
 class Bike(Entity):
-    """Represents a bike in the sharing system.
-
-    Attributes:
-        bike_type: Either 'classic' or 'electric'.
-        status: One of 'available', 'in_use', 'maintenance'.
-    """
+    # Base class for a bike in the system.
 
     VALID_STATUSES = {"available", "in_use", "maintenance"}
 
@@ -113,11 +85,6 @@ class Bike(Entity):
 
 
 class ClassicBike(Bike):
-    """A classic (non-electric) bike with gears.
-
-    Attributes:
-        gear_count: Number of gears (must be positive).
-    """
 
     def __init__(
         self,
@@ -145,13 +112,6 @@ class ClassicBike(Bike):
 
 
 class ElectricBike(Bike):
-    """An electric bike with a battery.
-
-    TODO:
-        - Add battery_level (float, 0–100) and max_range_km (float, > 0)
-        - Validate inputs in __init__
-        - Implement __str__ and __repr__
-    """
 
     def __init__(
         self,
@@ -161,8 +121,6 @@ class ElectricBike(Bike):
         status: str = "available",
     ) -> None:
         super().__init__(bike_id=bike_id, bike_type="electric", status=status)
-        # TODO: validate battery_level (0-100) and max_range_km (>0)
-        # TODO: store as private attributes with @property access
 
         if not (0 <= battery_level <= 100):
             raise ValueError("battery_level must be between 0 and 100")
@@ -194,11 +152,11 @@ class ElectricBike(Bike):
         self._max_range_km = value
 
     def __str__(self) -> str:
-        # TODO: return a user-friendly string
+       
         return f"ElectricBike(id={self.id}, battery_level={self.battery_level}, max_range_km={self.max_range_km})"
 
     def __repr__(self) -> str:
-        # TODO: return a debug-friendly string
+       
         return f"ElectricBike(bike_id={self.id!r}, battery_level={self.battery_level!r}, max_range_km={self.max_range_km!r}, status={self.status!r})"
 
 
@@ -207,13 +165,6 @@ class ElectricBike(Bike):
 # ---------------------------------------------------------------------------
 
 class Station(Entity):
-    """Represents a bike-sharing station.
-
-    TODO:
-        - Store station_id, name, capacity, latitude, longitude
-        - Validate: capacity > 0, lat in [-90, 90], lon in [-180, 180]
-        - Implement __str__ and __repr__
-    """
 
     def __init__(
         self,
@@ -226,7 +177,6 @@ class Station(Entity):
         super().__init__(id=station_id, created_at=None)
         self.name = name
         self.station_id = station_id
-        # TODO: validate and store attributes
 
         if capacity <= 0:
             raise ValueError("capacity must be positive")
@@ -271,11 +221,11 @@ class Station(Entity):
         self._longitude = value
 
     def __str__(self) -> str:
-        # TODO
+    
         return f"Station({self.id}, name={self.name}, capacity={self.capacity}, latitude={self.latitude}, longitude={self.longitude})"
 
     def __repr__(self) -> str:
-        # TODO
+        
         return f"Station(station_id={self.id!r}, name={self.name!r}, capacity={self.capacity!r}, latitude={self.latitude!r}, longitude={self.longitude!r})"
 
 
@@ -284,13 +234,6 @@ class Station(Entity):
 # ---------------------------------------------------------------------------
 
 class User(Entity):
-    """Base class for a system user.
-
-    TODO:
-        - Store user_id, name, email, user_type
-        - Validate email format (basic check: contains '@')
-        - Implement __str__ and __repr__
-    """
 
     def __init__(
         self,
@@ -300,7 +243,7 @@ class User(Entity):
         user_type: str,
     ) -> None:
         super().__init__(id=user_id)
-        # TODO: validate and store attributes
+       
         self.name = name
         self.user_type = user_type
         if "@" not in email:
@@ -319,21 +262,15 @@ class User(Entity):
         
 
     def __str__(self) -> str:
-        # TODO
+    
         return f"User({self.id}, name={self.name}, user_type={self.user_type})"
 
     def __repr__(self) -> str:
-        # TODO
+        
         return f"User(user_id={self.id!r}, name={self.name!r}, email={self.email!r}, user_type={self.user_type!r})"
 
 
 class CasualUser(User):
-    """A casual (non-member) user.
-
-    TODO:
-        - Add day_pass_count (int >= 0)
-        - Implement __str__ and __repr__
-    """
 
     def __init__(
         self,
@@ -343,7 +280,7 @@ class CasualUser(User):
         day_pass_count: int = 0,
     ) -> None:
         super().__init__(user_id=user_id, name=name, email=email, user_type="casual")
-        # TODO: validate and store day_pass_count
+        
         if day_pass_count < 0:
             raise ValueError("day_pass_count must be non-negative")
         self._day_pass_count = day_pass_count
@@ -359,23 +296,15 @@ class CasualUser(User):
         self._day_pass_count = value
 
     def __str__(self) -> str:
-        # TODO
+        
         return f"CasualUser({self.id}, name={self.name}, day_pass_count={self})"
 
     def __repr__(self) -> str:
-        # TODO
+        
         return f"CasualUser(user_id={self.id!r}, name={self.name!r}, email={self.email!r}, day_pass_count={self.day_pass_count!r})"
 
 
 class MemberUser(User):
-    """A registered member user.
-
-    TODO:
-        - Add membership_start (datetime), membership_end (datetime), tier (basic/premium)
-        - Validate that membership_end > membership_start
-        - Validate tier is 'basic' or 'premium'
-        - Implement __str__ and __repr__
-    """
 
     def __init__(
         self,
@@ -387,7 +316,7 @@ class MemberUser(User):
         tier: str = "basic",
     ) -> None:
         super().__init__(user_id=user_id, name=name, email=email, user_type="member")
-        # TODO: validate and store attributes
+        
         if membership_start is None:
             membership_start = datetime.now()
         if membership_end is None:
@@ -422,11 +351,11 @@ class MemberUser(User):
         self._tier = value
 
     def __str__(self) -> str:
-        # TODO
+        
         return f"MemberUser(id={self.id}, tier={self.tier}, membership_start={self.membership_start}, membership_end={self.membership_end})"
 
     def __repr__(self) -> str:
-        # TODO
+        
         return f"MemberUser(user_id={self.id!r}, name={self.name!r}, email={self.email!r}, membership_start={self.membership_start!r}, membership_end={self.membership_end!r}, tier={self.tier!r}   )"
 
 
@@ -435,15 +364,6 @@ class MemberUser(User):
 # ---------------------------------------------------------------------------
 
 class Trip:
-    """Represents a single bike trip.
-
-    TODO:
-        - Store all attributes: trip_id, user, bike, start_station,
-          end_station, start_time, end_time, distance_km
-        - Validate: distance_km >= 0, end_time >= start_time
-        - Implement duration_minutes as a @property
-        - Implement __str__ and __repr__
-    """
 
     def __init__(
         self,
@@ -456,7 +376,6 @@ class Trip:
         end_time: datetime,
         distance_km: float,
     ) -> None:
-        # TODO: validate and store attributes
 
         self.trip_id = trip_id
         self.user = user
@@ -481,16 +400,16 @@ class Trip:
     @property
     def duration_minutes(self) -> float:
         """Calculate trip duration in minutes from start and end times."""
-        # TODO: compute from end_time - start_time
+    
         duration = self.end_time - self.start_time
         return duration.total_seconds() / 60
 
     def __str__(self) -> str:
-        # TODO
+        
         return f"Trip({self.trip_id}, distance_km={self._distance_km}, duration_minutes={self.duration_minutes})"
 
     def __repr__(self) -> str:
-        # TODO
+        
         return f"Trip(trip_id={self.trip_id!r}, user={self.user!r}, bike={self.bike!r}, start_station={self.start_station!r}, end_station={self.end_station!r}, start_time={self.start_time!r}, end_time={self.end_time!r}, distance_km={self._distance_km!r})"
 
 
@@ -499,13 +418,6 @@ class Trip:
 # ---------------------------------------------------------------------------
 
 class MaintenanceRecord:
-    """Represents a maintenance event for a bike.
-
-    TODO:
-        - Store: record_id, bike, date, maintenance_type, cost, description
-        - Validate: cost >= 0, maintenance_type is one of the allowed types
-        - Implement __str__ and __repr__
-    """
 
     VALID_TYPES = {
         "tire_repair",
@@ -524,7 +436,7 @@ class MaintenanceRecord:
         cost: float,
         description: str = "",
     ) -> None:
-        # TODO: validate and store attributes
+        
         self.record_id = record_id
         self.bike = bike
         self.date = date
@@ -548,11 +460,11 @@ class MaintenanceRecord:
         return self._cost
 
     def __str__(self) -> str:
-        # TODO
+        
         return f"MaintenanceRecord(id={self.record_id}, bike_id={self.bike.id}, type={self.maintenance_type}, cost={self.cost}$)"
 
     def __repr__(self) -> str:
-        # TODO
+        
         return f"MaintenanceRecord(record_id={self.record_id!r}, bike={self.bike!r}, date={self.date!r}, maintenance_type={self.maintenance_type!r}, cost={self.cost!r}, description={self.description!r})"
 
 if __name__ == "__main__":
