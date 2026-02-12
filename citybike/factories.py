@@ -9,6 +9,7 @@ Students should:
     - Optionally add create_trip() and create_maintenance_record()
 """
 
+from datetime import datetime
 from models import (
     Bike,
     ClassicBike,
@@ -68,4 +69,33 @@ def create_user(data: dict) -> User:
         A CasualUser or MemberUser instance.
     """
     # TODO: implement factory logic (similar to create_bike above)
-    raise NotImplementedError("create_user")
+    user_type = data.get("user_type", "casual").lower()
+
+    if user_type == "casual":
+        return CasualUser(
+            user_id=data["user_id"],
+            name=data["name"],
+            email=data["email"],
+            day_pass_count=int(data.get("day_pass_count", 0)),  
+        )
+    elif user_type == "member":
+        membership_start = data.get("membership_start")
+        membership_end = data.get("membership_end")
+
+        if membership_start:
+            membership_start = datetime.fromisoformat(membership_start)
+        if membership_end:
+            membership_end = datetime.fromisoformat(membership_end)
+
+        tier=data.get("tier", "basic").lower()
+        return MemberUser(
+            user_id=data["user_id"],
+            name=data["name"],
+            email=data["email"],    
+            membership_start=membership_start,
+            membership_end=membwership_end,
+            tier=tier,
+        )
+
+    else:
+        raise ValueError(f"Unknown user_type: {user_type}")
