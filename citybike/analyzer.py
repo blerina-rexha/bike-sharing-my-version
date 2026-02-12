@@ -88,8 +88,7 @@ class BikeShareSystem:
             self.trips = self.trips[self.trips["distance_km"] >= 0]
         print(f"After removing invalid entries: {self.trips.shape[0]} trips")
 
-        # --- Step 6: Standardize categoricals ---
-        # TODO: e.g. self.trips["status"].str.lower().str.strip()
+        # --- Standardize categoricals ---
 
         self.trips["user_type"] = (self.trips["user_type"]).str.lower().str.strip()
         self.trips["bike_type"] = (self.trips["bike_type"]).str.lower().str.strip()
@@ -151,7 +150,6 @@ class BikeShareSystem:
         year_month = self.trips["start_time"].dt.to_period("M")
         monthly_counts = year_month.value_counts().sort_index()
         return monthly_counts
-
 
     def top_active_users(self, n: int = 15) -> pd.DataFrame:
         #Top *n* most active users by trip count.
