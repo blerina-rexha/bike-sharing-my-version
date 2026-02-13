@@ -1,13 +1,3 @@
-"""
-Factory Pattern — create domain objects from raw CSV-row dictionaries.
-
-The factory functions hide which concrete subclass is instantiated,
-so the rest of the code never needs to import ClassicBike / ElectricBike etc.
-
-Students should:
-    - Complete create_user()
-    - Optionally add create_trip() and create_maintenance_record()
-"""
 
 from datetime import datetime
 from models import (
@@ -19,24 +9,8 @@ from models import (
     MemberUser,
 )
 
-
 def create_bike(data: dict) -> Bike:
-    """Create a Bike (ClassicBike or ElectricBike) from a data dictionary.
-
-    Args:
-        data: A dict with at least 'bike_id' and 'bike_type'.
-
-    Returns:
-        A ClassicBike or ElectricBike instance.
-
-    Raises:
-        ValueError: If bike_type is unknown.
-
-    Example:
-        >>> bike = create_bike({"bike_id": "BK200", "bike_type": "electric"})
-        >>> isinstance(bike, ElectricBike)
-        True
-    """
+    #Create a Bike (ClassicBike or ElectricBike) from a data dictionary.
     bike_type = data.get("bike_type", "").lower()
 
     if bike_type == "classic":
@@ -55,20 +29,7 @@ def create_bike(data: dict) -> Bike:
 
 
 def create_user(data: dict) -> User:
-    """Create a User (CasualUser or MemberUser) from a data dictionary.
-
-    TODO:
-        - Inspect data["user_type"] to decide which subclass to create
-        - Pass the relevant fields to each constructor
-        - Return the created object
-
-    Args:
-        data: A dict with at least 'user_id', 'name', 'email', 'user_type'.
-
-    Returns:
-        A CasualUser or MemberUser instance.
-    """
-    # TODO: implement factory logic (similar to create_bike above)
+    #Create a User (CasualUser or MemberUser) from a data dictionary.   
     user_type = data.get("user_type", "casual").lower()
 
     if user_type == "casual":
@@ -93,7 +54,7 @@ def create_user(data: dict) -> User:
             name=data["name"],
             email=data["email"],    
             membership_start=membership_start,
-            membership_end=membwership_end,
+            membership_end=membership_end,
             tier=tier,
         )
 
